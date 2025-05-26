@@ -161,15 +161,16 @@
 
 import { createContext, useState } from "react";
 import { products } from "../assets/assets";
-
+import { useNavigate } from "react-router-dom";
 export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
   const currency = '₹';
-  const delivery_fee = 10;
+  const delivery_fee = 100;
   const [search, setSearch] = useState('');
   const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  const navigate = useNavigate();
 
   const addToCart = (item) => {
     const { _id: itemId, size } = item;
@@ -247,6 +248,23 @@ const ShopContextProvider = (props) => {
     }
     return totalCount;
   };
+  
+
+  const getCartAmount = () => {
+  let totalAmount = 0;
+  for (const itemId in cartItems) {
+    const product = products.find((product) => product._id === itemId);
+    if (!product) continue;
+
+    for (const size in cartItems[itemId]) {
+      const quantity = cartItems[itemId][size];
+      if (quantity > 0) {
+        totalAmount += quantity * product.price;
+      }
+    }
+  }
+  return totalAmount;
+};
 
   const value = {
     products,
@@ -261,8 +279,8 @@ const ShopContextProvider = (props) => {
     removeFromCart,
     incrementQuantity,
     decrementQuantity,
-    updateQuantity,
-    getCartCount,
+    updateQuantity,getCartCount,
+    getCartAmount, navigate
   };
 
   return (
@@ -273,3 +291,4 @@ const ShopContextProvider = (props) => {
 };
 
 export default ShopContextProvider;
+
