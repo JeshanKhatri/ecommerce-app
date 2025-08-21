@@ -39,8 +39,8 @@ const PlaceOrder = () => {
     transaction_uuid: uuidv4(),
     product_service_charge: "0",
     product_code: "EPAYTEST",
-    success_url: "http://localhost:5173/paymentsuccess",
-    failure_url: "http://localhost:5173/paymentfailure",
+    success_url: "http://localhost:5174/orders",
+    failure_url: "http://localhost:5174/paymentfailure",
     signed_field_names: "total_amount,transaction_uuid,product_code"
   });
 
