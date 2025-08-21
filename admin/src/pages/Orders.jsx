@@ -7,11 +7,15 @@ const Orders = ({ token }) => {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
   const fetchOrders = async () => {
     try {
       setLoading(true);
       const response = await axios.get(backendUrl + '/api/order/admin/list', {
-        headers: { token },
+         headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
       });
       if (response.data.success) {
         setOrders(response.data.orders);
@@ -31,7 +35,10 @@ const Orders = ({ token }) => {
       const response = await axios.put(
         `${backendUrl}/api/order/admin/${orderId}`,
         { orderStatus: newStatus },
-        { headers: { token } }
+        {   headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          } }
       );
       
       if (response.data.success) {
@@ -51,7 +58,10 @@ const Orders = ({ token }) => {
       const response = await axios.put(
         `${backendUrl}/api/order/admin/${orderId}`,
         { paymentStatus: newStatus },
-        { headers: { token } }
+        {   headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          } }
       );
       
       if (response.data.success) {
