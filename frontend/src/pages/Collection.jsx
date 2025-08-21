@@ -31,19 +31,27 @@ const Collection = () => {
     }
   }
 
-  const applyFilter = () =>{
+  const applyFilter = () => {
     let productsCopy = products.slice();
-    if (showSearch && search){
-      productsCopy = productsCopy.filter(item =>item.name.toLowerCase().includes(search.toLowerCase()))
+    console.log('Original products:', productsCopy); // Debugging log
+
+    if (showSearch && search) {
+      productsCopy = productsCopy.filter(item => item.name.toLowerCase().includes(search.toLowerCase()));
+      console.log('After search filter:', productsCopy); // Debugging log
     }
 
-    if (category.length > 0){
-      productsCopy = productsCopy.filter(item => category.includes(item.category))
+    if (category.length > 0) {
+      productsCopy = productsCopy.filter(item => category.includes(item.category));
+      console.log('After category filter:', productsCopy); // Debugging log
     }
-    if (subCategory.length > 0){
-      productsCopy = productsCopy.filter(item => subCategory.includes(item.subCategory))
+
+    if (subCategory.length > 0) {
+      productsCopy = productsCopy.filter(item => subCategory.includes(item.subCategory));
+      console.log('After subCategory filter:', productsCopy); // Debugging log
     }
-    setFilterProducts(productsCopy)
+
+    setFilterProducts(productsCopy);
+    console.log('Final filtered products:', productsCopy); // Debugging log
   }
 
 const sortProduct =() => {
@@ -66,7 +74,7 @@ const sortProduct =() => {
 }
   useEffect (()=> {
     applyFilter();
-  },[category, subCategory, search, showSearch])
+  },[category, subCategory, search, showSearch,products])
 
   useEffect(() => {
     sortProduct();
