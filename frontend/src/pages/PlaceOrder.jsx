@@ -102,7 +102,6 @@ const PlaceOrder = () => {
 
     if (!validateForm()) return;
 
-
     if (!cartItems || Object.keys(cartItems).length === 0) {
       toast.error('Your cart is empty. Please add products before placing an order.');
       return;
@@ -111,14 +110,26 @@ const PlaceOrder = () => {
     setIsSubmitting(true);
 
     try {
-
-
       const subtotal = getCartAmount();
       const total = subtotal + delivery_fee;
 
-      setformData({ ...formData, total_amount: total, amount: subtotal, product_delivery_charge: delivery_fee });
+      // Prepare new form data with all required fields
+      const newFormData = {
+        ...formData,
+        total_amount: total,
+        amount: subtotal,
+        product_delivery_charge: delivery_fee
+      };
 
-      console.log('Form data prepared for payment:', formData);
+      // Generate new signature for updated total_amount
+      newFormData.signature = generateSignature(
+        newFormData.total_amount,
+        newFormData.transaction_uuid,
+        newFormData.product_code,
+        "8gBm/:&EnhH.1/q"
+      );
+
+      console.log('Form data prepared for payment:', newFormData);
 
       // Create form and submit to backend
       const form = document.createElement('form');
@@ -127,7 +138,7 @@ const PlaceOrder = () => {
       form.style.display = 'none';
 
       // Add all order data
-      Object.entries(formData).forEach(([key, value]) => {
+      Object.entries(newFormData).forEach(([key, value]) => {
         const input = document.createElement('input');
         input.type = 'hidden';
         input.name = key;
@@ -137,7 +148,7 @@ const PlaceOrder = () => {
 
       document.body.appendChild(form);
 
-      console.log('Submitting payment form with data:', formData);
+      console.log('Submitting payment form with data:', newFormData);
       form.submit();
 
     } catch (error) {
