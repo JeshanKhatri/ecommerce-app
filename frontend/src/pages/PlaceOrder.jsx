@@ -1,7 +1,7 @@
-import React,{useContext, useEffect, useState} from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Title from '../components/Title'
 import CartTotal from '../components/CartTotal'
-import {assets} from '../assets/assets'
+import { assets } from '../assets/assets'
 import { ShopContext } from '../context/ShopContext'
 import { toast } from 'react-toastify'
 import axios from 'axios'
@@ -13,7 +13,7 @@ import CryptoJS from "crypto-js";
 const PlaceOrder = () => {
   // payment method fixed to eSewa for this flow
 
-  const {navigate, currentUser, getCartAmount, delivery_fee, backendUrl, cartItems, productsData, token } = useContext(ShopContext);
+  const { navigate, currentUser, getCartAmount, delivery_fee, backendUrl, cartItems, productsData, token } = useContext(ShopContext);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -33,19 +33,15 @@ const PlaceOrder = () => {
   }, [currentUser]);
 
 
-    const [formData, setformData] = useState({
-    amount: "",
-    total_amount: "",
-        product_delivery_charge: "0",
-signature: "",
-        tax_amount: "0",
+  const [formData, setformData] = useState({
+    signature: "",
+    tax_amount: "0",
     transaction_uuid: uuidv4(),
     product_service_charge: "0",
     product_code: "EPAYTEST",
     success_url: "http://localhost:5173/paymentsuccess",
     failure_url: "http://localhost:5173/paymentfailure",
-    signed_field_names: "total_amount,transaction_uuid,product_code",
-    
+    signed_field_names: "total_amount,transaction_uuid,product_code"
   });
 
   // generate signature function
@@ -103,26 +99,26 @@ signature: "",
 
   const handleEsewaPayment = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
-  
-    
+
+
     if (!cartItems || Object.keys(cartItems).length === 0) {
       toast.error('Your cart is empty. Please add products before placing an order.');
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
- 
-      
+
+
       const subtotal = getCartAmount();
       const total = subtotal + delivery_fee;
-      
-    setformData({ ...formData, total_amount: total,amount:subtotal, product_delivery_charge: delivery_fee });
 
-    console.log('Form data prepared for payment:', formData);
+      setformData({ ...formData, total_amount: total, amount: subtotal, product_delivery_charge: delivery_fee });
+
+      console.log('Form data prepared for payment:', formData);
 
       // Create form and submit to backend
       const form = document.createElement('form');
@@ -143,7 +139,7 @@ signature: "",
 
       console.log('Submitting payment form with data:', formData);
       form.submit();
-      
+
     } catch (error) {
       console.error('Payment error:', error);
       toast.error('Payment failed. Please try again.');
@@ -163,84 +159,84 @@ signature: "",
       <div className="flex flex-col gap-4 w-full sm:max-w-[480px]">
 
         <div className="text-xl sm:text-2xl my-3">
-          <Title text1={'DELIVERY'} text2={'INFORMATION'}/>
+          <Title text1={'DELIVERY'} text2={'INFORMATION'} />
         </div>
 
         <form onSubmit={handleEsewaPayment} className="flex flex-col gap-4">
           <div className="flex gap-3">
-            <input 
-              value={firstName} 
-              onChange={(e)=>setFirstName(e.target.value)} 
-              className='border border-gray-300 rounded py-1.5 px-3.5 w-full' 
-              type="text" 
-              placeholder='first name' 
+            <input
+              value={firstName}
+              onChange={(e) => setFirstName(e.target.value)}
+              className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+              type="text"
+              placeholder='first name'
               required
             />
-            <input 
-              value={lastName} 
-              onChange={(e)=>setLastName(e.target.value)} 
-              className='border border-gray-300 rounded py-1.5 px-3.5 w-full' 
-              type="text" 
-              placeholder='last name' 
+            <input
+              value={lastName}
+              onChange={(e) => setLastName(e.target.value)}
+              className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+              type="text"
+              placeholder='last name'
               required
-            /> 
+            />
           </div>
 
-          <input 
-            value={email} 
-            onChange={(e)=>setEmail(e.target.value)} 
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full' 
-            type="email" 
-            placeholder='email address' 
+          <input
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+            type="email"
+            placeholder='email address'
             required
           />
           <div className="flex gap-3">
-            <input 
-              value={region} 
-              onChange={(e)=>setRegion(e.target.value)} 
-              className='border border-gray-300 rounded py-1.5 px-3.5 w-full' 
-              type="text" 
-              placeholder='Region' 
+            <input
+              value={region}
+              onChange={(e) => setRegion(e.target.value)}
+              className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+              type="text"
+              placeholder='Region'
               required
             />
-            <input 
-              value={city} 
-              onChange={(e)=>setCity(e.target.value)} 
-              className='border border-gray-300 rounded py-1.5 px-3.5 w-full' 
-              type="text" 
-              placeholder='City' 
+            <input
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+              type="text"
+              placeholder='City'
               required
-            /> 
+            />
           </div>
 
-          <input 
-            value={phone} 
-            onChange={(e)=>setPhone(e.target.value)} 
-            className='border border-gray-300 rounded py-1.5 px-3.5 w-full' 
-            type="tel" 
-            placeholder='phone number' 
+          <input
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            className='border border-gray-300 rounded py-1.5 px-3.5 w-full'
+            type="tel"
+            placeholder='phone number'
             required
           />
         </form>
       </div>
 
       {/*rightside */}
-      
+
       <div className="mt-8">
         <div className="mt-8 min-w-80">
           <CartTotal />
         </div>
 
         <div className="mt-12">
-          <Title text1={'PAYMENT'} text2={'METHOD'}/>
+          <Title text1={'PAYMENT'} text2={'METHOD'} />
           <div className="py-2">
             <img className='h-6' src={assets.esewa_logo} alt="eSewa" />
           </div>
 
           <div className="w-full text-end mt-8 space-y-3">
             <div className="flex justify-end gap-3">
-              <button 
-                onClick={handleEsewaPayment} 
+              <button
+                onClick={handleEsewaPayment}
                 disabled={isSubmitting}
                 className='flex items-center gap-3 bg-[#007f2a] hover:bg-[#006b22] disabled:bg-gray-400 text-white px-6 py-3 text-sm rounded'
               >
@@ -253,7 +249,7 @@ signature: "",
         </div>
 
       </div>
-      
+
     </div>
   )
 }
