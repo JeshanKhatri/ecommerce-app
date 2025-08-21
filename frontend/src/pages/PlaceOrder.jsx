@@ -142,7 +142,7 @@ signature: "",
       document.body.appendChild(form);
 
       console.log('Submitting payment form with data:', formData);
-      // form.submit();
+      form.submit();
       
     } catch (error) {
       console.error('Payment error:', error);
