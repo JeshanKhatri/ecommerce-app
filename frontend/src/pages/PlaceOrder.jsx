@@ -13,7 +13,7 @@ import CryptoJS from "crypto-js";
 const PlaceOrder = () => {
   // payment method fixed to eSewa for this flow
 
-  const { navigate, currentUser, getCartAmount, delivery_fee, backendUrl, cartItems, productsData, token } = useContext(ShopContext);
+  const { navigate, currentUser, getCartAmount, delivery_fee, backendUrl, cartItems, products, token } = useContext(ShopContext);
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -115,11 +115,27 @@ const PlaceOrder = () => {
 
       // Prepare order data for backend
 
-      if (!Array.isArray(productsData) || productsData.length === 0) {
+      console.log("products data: ", products);
+      if (!Array.isArray(products) || products.length === 0) {
         toast.error('Product data not loaded. Please refresh the page and try again.');
         setIsSubmitting(false);
         return;
       }
+
+      // Flatten cartItems to array of { productId, size, quantity }
+      const items = [];
+      Object.entries(cartItems).forEach(([productId, sizes]) => {
+        Object.entries(sizes).forEach(([size, quantity]) => {
+          const product = products.find(p => p._id === productId);
+          items.push({
+            productId,
+            name: product?.name || '',
+            price: product?.price || 0,
+            size,
+            quantity: Number(quantity)
+          });
+        });
+      });
 
       const orderPayload = {
         customerName: `${firstName} ${lastName}`,
@@ -127,15 +143,7 @@ const PlaceOrder = () => {
         customerPhone: phone,
         region,
         city,
-        items: Object.entries(cartItems).map(([productId, quantity]) => {
-          const product = productsData.find(p => p._id === productId);
-          return {
-            productId,
-            name: product?.name || '',
-            price: product?.price || 0,
-            quantity
-          };
-        }),
+        items,
         subtotal,
         deliveryFee: delivery_fee,
         total
@@ -143,7 +151,7 @@ const PlaceOrder = () => {
 
       // Call backend to create order
       const res = await axios.post(
-        `${backendUrl}/api/orders/create`,
+        `${backendUrl}/api/order/create`,
         orderPayload,
         { headers: { Authorization: `Bearer ${token}` } }
       );
