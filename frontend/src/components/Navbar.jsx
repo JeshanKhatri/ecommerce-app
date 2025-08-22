@@ -62,7 +62,7 @@ const  logout = () => {
                        </>
                      ) : null}
                      <p onClick={()=>navigate('/profile')} className='cursor-pointer hover:text-black'>My profile</p>
-                     <p className='cursor-pointer hover:text-black'>Orders</p>
+                     <p onClick={()=>navigate('/orders')} className='cursor-pointer hover:text-black'>Orders</p>
                      <p onClick={logout} className='cursor-pointer hover:text-black'>Logout</p>
                    </div>
                  </div>
