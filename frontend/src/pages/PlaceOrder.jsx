@@ -113,7 +113,46 @@ const PlaceOrder = () => {
       const subtotal = getCartAmount();
       const total = subtotal + delivery_fee;
 
-      // Prepare new form data with all required fields
+      // Prepare order data for backend
+
+      if (!Array.isArray(productsData) || productsData.length === 0) {
+        toast.error('Product data not loaded. Please refresh the page and try again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      const orderPayload = {
+        customerName: `${firstName} ${lastName}`,
+        customerEmail: email,
+        customerPhone: phone,
+        region,
+        city,
+        items: Object.entries(cartItems).map(([productId, quantity]) => {
+          const product = productsData.find(p => p._id === productId);
+          return {
+            productId,
+            name: product?.name || '',
+            price: product?.price || 0,
+            quantity
+          };
+        }),
+        subtotal,
+        deliveryFee: delivery_fee,
+        total
+      };
+
+      // Call backend to create order
+      const res = await axios.post(
+        `${backendUrl}/api/orders/create`,
+        orderPayload,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      if (!res.data.success) {
+        throw new Error(res.data.message || 'Order creation failed');
+      }
+
+      // Prepare eSewa payment form data
       const newFormData = {
         ...formData,
         total_amount: total,
@@ -129,15 +168,12 @@ const PlaceOrder = () => {
         "8gBm/:&EnhH.1/q"
       );
 
-      console.log('Form data prepared for payment:', newFormData);
-
-      // Create form and submit to backend
+      // Create and submit eSewa payment form
       const form = document.createElement('form');
       form.method = 'POST';
       form.action = `https://rc-epay.esewa.com.np/api/epay/main/v2/form`;
       form.style.display = 'none';
 
-      // Add all order data
       Object.entries(newFormData).forEach(([key, value]) => {
         const input = document.createElement('input');
         input.type = 'hidden';
@@ -147,13 +183,11 @@ const PlaceOrder = () => {
       });
 
       document.body.appendChild(form);
-
-      console.log('Submitting payment form with data:', newFormData);
       form.submit();
 
     } catch (error) {
-      console.error('Payment error:', error);
-      toast.error('Payment failed. Please try again.');
+      console.error('Order/payment error:', error);
+      toast.error(error?.response?.data?.message || error.message || 'Payment failed. Please try again.');
       setIsSubmitting(false);
     }
   };
